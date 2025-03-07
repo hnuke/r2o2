@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roleta de Sorteio</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
+        .roleta-container { position: relative; }
+        .roleta { width: 200px; height: 200px; border-radius: 50%; border: 5px solid black; display: flex; align-items: center; justify-content: center; background: lightgray; }
+        .arrow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 20px; }
+        ul { list-style: none; padding: 0; }
+    </style>
+</head>
+<body>
+    <h1>Roleta de Sorteio</h1>
+    
+    <div class="container">
+        <div>
+            <h3>Adicionar Prêmios</h3>
+            <input type="text" id="premio" placeholder="Digite um prêmio">
+            <button onclick="adicionarPremio()">Adicionar</button>
+            <ul id="lista-premios"></ul>
+        </div>
+        
+        <div class="roleta-container">
+            <div class="arrow">▼</div>
+            <div class="roleta" onclick="girarRoleta()">Sortear</div>
+        </div>
+        
+        <div>
+            <h3>Adicionar Participantes</h3>
+            <input type="text" id="participante" placeholder="Digite um nome">
+            <button onclick="adicionarParticipante()">Adicionar</button>
+            <ul id="lista-participantes"></ul>
+            <h4>Selecionar Participante:</h4>
+            <select id="selecionar-participante"></select>
+        </div>
+    </div>
+    
+    <h2 id="resultado"></h2>
+
+    <script>
+        let premios = [];
+        let participantes = [];
+        
+        function adicionarPremio() {
+            let premio = document.getElementById("premio").value;
+            if (premio) {
+                premios.push(premio);
+                atualizarLista("lista-premios", premios);
+                document.getElementById("premio").value = "";
+            }
+        }
+        
+        function adicionarParticipante() {
+            let participante = document.getElementById("participante").value;
+            if (participante) {
+                participantes.push(participante);
+                atualizarLista("lista-participantes", participantes);
+                atualizarSelectParticipantes();
+                document.getElementById("participante").value = "";
+            }
+        }
+        
+        function atualizarLista(id, lista) {
+            let ul = document.getElementById(id);
+            ul.innerHTML = "";
+            lista.forEach((item, index) => {
+                ul.innerHTML += `<li>${item} <button onclick="removerItem('${id}', ${index})">X</button></li>`;
+            });
+        }
+        
+        function atualizarSelectParticipantes() {
+            let select = document.getElementById("selecionar-participante");
+            select.innerHTML = "";
+            participantes.forEach(participante => {
+                let option = document.createElement("option");
+                option.text = participante;
+                select.add(option);
+            });
+        }
+        
+        function removerItem(id, index) {
+            if (id === "lista-premios") premios.splice(index, 1);
+            else participantes.splice(index, 1);
+            atualizarLista(id, id === "lista-premios" ? premios : participantes);
+            atualizarSelectParticipantes();
+        }
+        
+        function girarRoleta() {
+            let participanteSelecionado = document.getElementById("selecionar-participante").value;
+            if (!participanteSelecionado) {
+                alert("Selecione um participante antes de girar a roleta!");
+                return;
+            }
+            if (premios.length === 0) {
+                alert("Adicione prêmios antes de girar a roleta!");
+                return;
+            }
+            let premioSorteado = premios[Math.floor(Math.random() * premios.length)];
+            document.getElementById("resultado").innerText = `${participanteSelecionado} ganhou: ${premioSorteado}!`;
+        }
+    </script>
+</body>
+</html>
