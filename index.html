@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roleta de Sorteio</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; }
         .container { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
-        .roleta-container { position: relative; }
-        .roleta { width: 200px; height: 200px; border-radius: 50%; border: 5px solid black; display: flex; align-items: center; justify-content: center; background: lightgray; }
+        .roleta-container { position: relative; width: 220px; height: 220px; }
+        .roleta { width: 200px; height: 200px; border-radius: 50%; border: 5px solid black; position: relative; overflow: hidden; transition: transform 3s ease-out; }
+        .setor { position: absolute; width: 100%; height: 100%; clip-path: polygon(50% 50%, 100% 0, 100% 100%); transform-origin: 50% 50%; }
         .arrow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 20px; }
         ul { list-style: none; padding: 0; }
+        button { margin-top: 5px; padding: 5px 10px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; }
+        button:hover { background: #0056b3; }
     </style>
 </head>
 <body>
@@ -26,7 +29,8 @@
         
         <div class="roleta-container">
             <div class="arrow">▼</div>
-            <div class="roleta" onclick="girarRoleta()">Sortear</div>
+            <div class="roleta" id="roleta"></div>
+            <button onclick="girarRoleta()">Sortear</button>
         </div>
         
         <div>
@@ -50,6 +54,7 @@
             if (premio) {
                 premios.push(premio);
                 atualizarLista("lista-premios", premios);
+                atualizarRoleta();
                 document.getElementById("premio").value = "";
             }
         }
@@ -87,6 +92,24 @@
             else participantes.splice(index, 1);
             atualizarLista(id, id === "lista-premios" ? premios : participantes);
             atualizarSelectParticipantes();
+            atualizarRoleta();
+        }
+        
+        function atualizarRoleta() {
+            let roleta = document.getElementById("roleta");
+            roleta.innerHTML = "";
+            let total = premios.length;
+            if (total === 0) return;
+            let cores = ["#FF5733", "#33FF57", "#3357FF", "#F1C40F", "#9B59B6", "#E74C3C"];
+            premios.forEach((premio, i) => {
+                let angulo = (360 / total) * i;
+                let setor = document.createElement("div");
+                setor.className = "setor";
+                setor.style.backgroundColor = cores[i % cores.length];
+                setor.style.transform = `rotate(${angulo}deg)`;
+                setor.innerText = premio;
+                roleta.appendChild(setor);
+            });
         }
         
         function girarRoleta() {
@@ -99,8 +122,13 @@
                 alert("Adicione prêmios antes de girar a roleta!");
                 return;
             }
-            let premioSorteado = premios[Math.floor(Math.random() * premios.length)];
-            document.getElementById("resultado").innerText = `${participanteSelecionado} ganhou: ${premioSorteado}!`;
+            let roleta = document.getElementById("roleta");
+            let giro = 3600 + Math.floor(Math.random() * 360);
+            roleta.style.transform = `rotate(${giro}deg)`;
+            setTimeout(() => {
+                let indexPremio = Math.floor(Math.random() * premios.length);
+                document.getElementById("resultado").innerText = `${participanteSelecionado} ganhou: ${premios[indexPremio]}!`;
+            }, 3000);
         }
     </script>
 </body>
