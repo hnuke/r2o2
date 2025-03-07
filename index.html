@@ -116,6 +116,31 @@
                 roleta.appendChild(setor);
             });
         }
+
+        function girarRoleta() {
+            if (premios.length === 0) {
+                alert("Adicione prêmios antes de girar a roleta!");
+                return;
+            }
+
+            let roleta = document.getElementById("roleta");
+            let total = premios.length;
+            let anguloBase = 360 / total;
+            let giroCompleto = 360 * 5; // 5 voltas completas
+            let anguloAleatorio = Math.floor(Math.random() * 360);
+            let anguloFinal = giroCompleto + anguloAleatorio;
+
+            roleta.style.transform = `rotate(${anguloFinal}deg)`;
+
+            // Calcular o prêmio sorteado
+            let resultado = Math.floor((anguloAleatorio % 360) / anguloBase);
+            let premioSorteado = premios[resultado];
+
+            // Exibir o resultado após a rotação
+            setTimeout(() => {
+                document.getElementById("resultado").innerText = `Prêmio sorteado: ${premioSorteado}`;
+            }, 3000);
+        }
     </script>
 </body>
 </html>
