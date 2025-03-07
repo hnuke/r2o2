@@ -77,9 +77,9 @@
 
   .seta {
     position: absolute;
-    top: 50%;
-    left: -10px;
-    transform: translateY(-50%) rotate(90deg);
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 0;
     height: 0;
     border-left: 10px solid transparent;
@@ -202,7 +202,7 @@
       segmento.className = 'segmento';
       segmento.style.backgroundColor = `hsl(${index * (360 / premios.length)}, 70%, 50%)`;
       segmento.style.transform = `rotate(${index * angulo}deg)`;
-      segmento.innerHTML = `<div style="transform: rotate(${angulo / 2}deg); text-align: center;">${premio}</div>`;
+      segmento.innerHTML = `<div style="transform: rotate(${angulo / 2}deg); text-align: center; width: 100%;">${premio}</div>`;
       roleta.appendChild(segmento);
     });
   }
