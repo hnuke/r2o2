@@ -3,52 +3,141 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roleta de Prêmios</title>
+<title>Roleta Visual de Prêmios</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
   }
-  #roleta, #nomes {
+
+  h1 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+
+  input[type="text"] {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+
+  button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+
+  .roleta {
+    width: 200px;
+    height: 200px;
+    border: 5px solid #007bff;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    margin: 20px auto;
+    transform: rotate(0deg);
+    transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  .roleta::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #007bff;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  }
+
+  .segmento {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(50% 50%, 100% 0, 100% 100%);
+    transform-origin: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .nomes {
     margin-top: 20px;
   }
-  input, button {
-    margin-top: 10px;
-  }
-  ul {
-    list-style-type: none;
+
+  .nomes ul {
+    list-style: none;
     padding: 0;
   }
-  li {
-    margin: 5px 0;
+
+  .nomes li {
+    margin: 10px 0;
+    font-size: 16px;
+  }
+
+  .nomes input[type="radio"] {
+    margin-right: 10px;
   }
 </style>
 </head>
 <body>
 
-<h1>Roleta de Prêmios</h1>
+<h1>Roleta Visual de Prêmios</h1>
 
-<div>
-  <input type="text" id="premioInput" placeholder="Adicionar prêmio">
-  <button onclick="adicionarPremio()">Adicionar Prêmio</button>
-</div>
+<div class="container">
+  <div>
+    <input type="text" id="premioInput" placeholder="Digite um prêmio">
+    <button onclick="adicionarPremio()">Adicionar Prêmio</button>
+  </div>
 
-<div id="roleta">
-  <h2>Prêmios Disponíveis</h2>
-  <ul id="listaPremios"></ul>
-</div>
+  <div class="roleta" id="roleta">
+    <!-- Segmentos da roleta serão gerados aqui -->
+  </div>
 
-<div>
-  <input type="text" id="nomeInput" placeholder="Adicionar nome">
-  <button onclick="adicionarNome()">Adicionar Nome</button>
-</div>
+  <div>
+    <input type="text" id="nomeInput" placeholder="Digite um nome">
+    <button onclick="adicionarNome()">Adicionar Nome</button>
+  </div>
 
-<div id="nomes">
-  <h2>Nomes</h2>
-  <ul id="listaNomes"></ul>
-</div>
+  <div class="nomes">
+    <h2>Nomes</h2>
+    <ul id="listaNomes"></ul>
+  </div>
 
-<div>
   <button onclick="sortearPremio()">Sortear Prêmio</button>
 </div>
 
@@ -57,16 +146,16 @@
   let nomes = [];
 
   function adicionarPremio() {
-    const premio = document.getElementById('premioInput').value;
+    const premio = document.getElementById('premioInput').value.trim();
     if (premio) {
       premios.push(premio);
-      atualizarListaPremios();
+      atualizarRoleta();
       document.getElementById('premioInput').value = '';
     }
   }
 
   function adicionarNome() {
-    const nome = document.getElementById('nomeInput').value;
+    const nome = document.getElementById('nomeInput').value.trim();
     if (nome) {
       nomes.push(nome);
       atualizarListaNomes();
@@ -74,21 +163,44 @@
     }
   }
 
-  function atualizarListaPremios() {
-    const lista = document.getElementById('listaPremios');
-    lista.innerHTML = premios.map(premio => `<li>${premio}</li>`).join('');
+  function atualizarRoleta() {
+    const roleta = document.getElementById('roleta');
+    roleta.innerHTML = '';
+    const angulo = 360 / premios.length;
+
+    premios.forEach((premio, index) => {
+      const segmento = document.createElement('div');
+      segmento.className = 'segmento';
+      segmento.style.backgroundColor = `hsl(${index * (360 / premios.length)}, 70%, 50%)`;
+      segmento.style.transform = `rotate(${index * angulo}deg)`;
+      segmento.textContent = premio;
+      roleta.appendChild(segmento);
+    });
   }
 
   function atualizarListaNomes() {
     const lista = document.getElementById('listaNomes');
-    lista.innerHTML = nomes.map(nome => `<li><input type="radio" name="nomeSelecionado" value="${nome}"> ${nome}</li>`).join('');
+    lista.innerHTML = nomes.map((nome, index) => `
+      <li>
+        <input type="radio" name="nomeSelecionado" value="${nome}" id="nome${index}">
+        <label for="nome${index}">${nome}</label>
+      </li>
+    `).join('');
   }
 
   function sortearPremio() {
     const nomeSelecionado = document.querySelector('input[name="nomeSelecionado"]:checked');
     if (nomeSelecionado && premios.length > 0) {
-      const premioSorteado = premios[Math.floor(Math.random() * premios.length)];
-      alert(`${nomeSelecionado.value} ganhou: ${premioSorteado}`);
+      const roleta = document.getElementById('roleta');
+      const giro = Math.floor(Math.random() * 3600) + 1440; // Gira entre 4 e 10 voltas
+      roleta.style.transform = `rotate(${giro}deg)`;
+
+      setTimeout(() => {
+        const anguloFinal = giro % 360;
+        const indexPremio = Math.floor((360 - anguloFinal) / (360 / premios.length));
+        const premioSorteado = premios[indexPremio];
+        alert(`${nomeSelecionado.value} ganhou: ${premioSorteado}`);
+      }, 4000); // Tempo da animação
     } else {
       alert('Por favor, selecione um nome e adicione pelo menos um prêmio.');
     }
