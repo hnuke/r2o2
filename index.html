@@ -57,6 +57,13 @@
     background-color: #0056b3;
   }
 
+  .roleta-container {
+    position: relative;
+    margin: 20px auto;
+    width: 220px;
+    height: 220px;
+  }
+
   .roleta {
     width: 200px;
     height: 200px;
@@ -64,21 +71,21 @@
     border-radius: 50%;
     position: relative;
     overflow: hidden;
-    margin: 20px auto;
     transform: rotate(0deg);
     transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
   }
 
-  .roleta::after {
-    content: '';
+  .seta {
     position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: #007bff;
     top: -10px;
     left: 50%;
     transform: translateX(-50%);
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 20px solid #007bff;
+    z-index: 2;
   }
 
   .segmento {
@@ -124,8 +131,11 @@
     <button onclick="adicionarPremio()">Adicionar Prêmio</button>
   </div>
 
-  <div class="roleta" id="roleta">
-    <!-- Segmentos da roleta serão gerados aqui -->
+  <div class="roleta-container">
+    <div class="seta"></div>
+    <div class="roleta" id="roleta">
+      <!-- Segmentos da roleta serão gerados aqui -->
+    </div>
   </div>
 
   <div>
