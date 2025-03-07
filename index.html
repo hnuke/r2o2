@@ -1,146 +1,99 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roleta de Sorteio</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; }
-        .container { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
-        .roleta-container { position: relative; width: 400px; height: 400px; }
-        .roleta { width: 100%; height: 100%; border-radius: 50%; border: 5px solid black; position: relative; overflow: hidden; transition: transform 3s ease-out; }
-        .setor { position: absolute; width: 50%; height: 50%; top: 50%; left: 50%; transform-origin: 0% 0%; clip-path: polygon(0% 0%, 100% 50%, 0% 100%); }
-        .setor span { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; transform-origin: center; font-size: 14px; font-weight: bold; color: white; }
-        .arrow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 20px; }
-        ul { list-style: none; padding: 0; }
-        button { margin-top: 5px; padding: 5px 10px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; }
-        button:hover { background: #0056b3; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roleta de Prêmios</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  #roleta, #nomes {
+    margin-top: 20px;
+  }
+  input, button {
+    margin-top: 10px;
+  }
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  li {
+    margin: 5px 0;
+  }
+</style>
 </head>
 <body>
-    <h1>Roleta de Sorteio</h1>
-    
-    <div class="container">
-        <div>
-            <h3>Adicionar Prêmios</h3>
-            <input type="text" id="premio" placeholder="Digite um prêmio">
-            <button onclick="adicionarPremio()">Adicionar</button>
-            <ul id="lista-premios"></ul>
-        </div>
-        
-        <div class="roleta-container">
-            <div class="arrow">▼</div>
-            <div class="roleta" id="roleta"></div>
-            <button onclick="girarRoleta()">Sortear</button>
-        </div>
-        
-        <div>
-            <h3>Adicionar Participantes</h3>
-            <input type="text" id="participante" placeholder="Digite um nome">
-            <button onclick="adicionarParticipante()">Adicionar</button>
-            <ul id="lista-participantes"></ul>
-            <h4>Selecionar Participante:</h4>
-            <select id="selecionar-participante"></select>
-        </div>
-    </div>
-    
-    <h2 id="resultado"></h2>
 
-    <script>
-        let premios = [];
-        let participantes = [];
-        
-        function adicionarPremio() {
-            let premio = document.getElementById("premio").value;
-            if (premio) {
-                premios.push(premio);
-                atualizarLista("lista-premios", premios);
-                atualizarRoleta();
-                document.getElementById("premio").value = "";
-            }
-        }
-        
-        function adicionarParticipante() {
-            let participante = document.getElementById("participante").value;
-            if (participante) {
-                participantes.push(participante);
-                atualizarLista("lista-participantes", participantes);
-                atualizarSelectParticipantes();
-                document.getElementById("participante").value = "";
-            }
-        }
-        
-        function atualizarLista(id, lista) {
-            let ul = document.getElementById(id);
-            ul.innerHTML = "";
-            lista.forEach((item, index) => {
-                ul.innerHTML += `<li>${item} <button onclick="removerItem('${id}', ${index})">X</button></li>`;
-            });
-        }
-        
-        function atualizarSelectParticipantes() {
-            let select = document.getElementById("selecionar-participante");
-            select.innerHTML = "";
-            participantes.forEach(participante => {
-                let option = document.createElement("option");
-                option.text = participante;
-                select.add(option);
-            });
-        }
-        
-        function removerItem(id, index) {
-            if (id === "lista-premios") premios.splice(index, 1);
-            else participantes.splice(index, 1);
-            atualizarLista(id, id === "lista-premios" ? premios : participantes);
-            atualizarSelectParticipantes();
-            atualizarRoleta();
-        }
-        
-        function atualizarRoleta() {
-            let roleta = document.getElementById("roleta");
-            roleta.innerHTML = "";
-            let total = premios.length;
-            if (total === 0) return;
-            let cores = ["#FF5733", "#33FF57", "#3357FF", "#F1C40F", "#9B59B6", "#E74C3C"];
-            let anguloBase = 360 / total;
-            premios.forEach((premio, i) => {
-                let angulo = anguloBase * i;
-                let setor = document.createElement("div");
-                setor.className = "setor";
-                setor.style.backgroundColor = cores[i % cores.length];
-                setor.style.transform = `rotate(${angulo}deg) skewY(${90 - anguloBase}deg)`;
-                
-                let texto = document.createElement("span");
-                texto.innerText = premio;
-                setor.appendChild(texto);
-                roleta.appendChild(setor);
-            });
-        }
+<h1>Roleta de Prêmios</h1>
 
-        function girarRoleta() {
-            if (premios.length === 0) {
-                alert("Adicione prêmios antes de girar a roleta!");
-                return;
-            }
+<div>
+  <input type="text" id="premioInput" placeholder="Adicionar prêmio">
+  <button onclick="adicionarPremio()">Adicionar Prêmio</button>
+</div>
 
-            let roleta = document.getElementById("roleta");
-            let total = premios.length;
-            let anguloBase = 360 / total;
-            let giroCompleto = 360 * 5; // 5 voltas completas
-            let anguloAleatorio = Math.floor(Math.random() * 360);
-            let anguloFinal = giroCompleto + anguloAleatorio;
+<div id="roleta">
+  <h2>Prêmios Disponíveis</h2>
+  <ul id="listaPremios"></ul>
+</div>
 
-            roleta.style.transform = `rotate(${anguloFinal}deg)`;
+<div>
+  <input type="text" id="nomeInput" placeholder="Adicionar nome">
+  <button onclick="adicionarNome()">Adicionar Nome</button>
+</div>
 
-            // Calcular o prêmio sorteado
-            let resultado = Math.floor((anguloAleatorio % 360) / anguloBase);
-            let premioSorteado = premios[resultado];
+<div id="nomes">
+  <h2>Nomes</h2>
+  <ul id="listaNomes"></ul>
+</div>
 
-            // Exibir o resultado após a rotação
-            setTimeout(() => {
-                document.getElementById("resultado").innerText = `Prêmio sorteado: ${premioSorteado}`;
-            }, 3000);
-        }
-    </script>
+<div>
+  <button onclick="sortearPremio()">Sortear Prêmio</button>
+</div>
+
+<script>
+  let premios = [];
+  let nomes = [];
+
+  function adicionarPremio() {
+    const premio = document.getElementById('premioInput').value;
+    if (premio) {
+      premios.push(premio);
+      atualizarListaPremios();
+      document.getElementById('premioInput').value = '';
+    }
+  }
+
+  function adicionarNome() {
+    const nome = document.getElementById('nomeInput').value;
+    if (nome) {
+      nomes.push(nome);
+      atualizarListaNomes();
+      document.getElementById('nomeInput').value = '';
+    }
+  }
+
+  function atualizarListaPremios() {
+    const lista = document.getElementById('listaPremios');
+    lista.innerHTML = premios.map(premio => `<li>${premio}</li>`).join('');
+  }
+
+  function atualizarListaNomes() {
+    const lista = document.getElementById('listaNomes');
+    lista.innerHTML = nomes.map(nome => `<li><input type="radio" name="nomeSelecionado" value="${nome}"> ${nome}</li>`).join('');
+  }
+
+  function sortearPremio() {
+    const nomeSelecionado = document.querySelector('input[name="nomeSelecionado"]:checked');
+    if (nomeSelecionado && premios.length > 0) {
+      const premioSorteado = premios[Math.floor(Math.random() * premios.length)];
+      alert(`${nomeSelecionado.value} ganhou: ${premioSorteado}`);
+    } else {
+      alert('Por favor, selecione um nome e adicione pelo menos um prêmio.');
+    }
+  }
+</script>
+
 </body>
 </html>
