@@ -7,9 +7,10 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; }
         .container { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
-        .roleta-container { position: relative; width: 320px; height: 320px; }
-        .roleta { width: 300px; height: 300px; border-radius: 50%; border: 5px solid black; position: relative; overflow: hidden; transition: transform 3s ease-out; }
-        .setor { position: absolute; width: 100%; height: 100%; clip-path: polygon(50% 50%, 100% 0, 100% 100%); transform-origin: 50% 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 14px; font-weight: bold; text-align: center; }
+        .roleta-container { position: relative; width: 400px; height: 400px; }
+        .roleta { width: 100%; height: 100%; border-radius: 50%; border: 5px solid black; position: relative; overflow: hidden; transition: transform 3s ease-out; }
+        .setor { position: absolute; width: 100%; height: 100%; clip-path: polygon(50% 50%, 100% 0, 100% 100%); transform-origin: 50% 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 16px; font-weight: bold; text-align: center; }
+        .setor span { position: absolute; width: 100px; transform: rotate(-90deg); text-align: center; }
         .arrow { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 20px; }
         ul { list-style: none; padding: 0; }
         button { margin-top: 5px; padding: 5px 10px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; }
@@ -106,8 +107,11 @@
                 let setor = document.createElement("div");
                 setor.className = "setor";
                 setor.style.backgroundColor = cores[(i * 2) % cores.length];
-                setor.style.transform = `rotate(${angulo}deg)`;
-                setor.innerText = premio;
+                setor.style.transform = `rotate(${angulo}deg) skewY(${90 - 360 / total}deg)`;
+                let texto = document.createElement("span");
+                texto.innerText = premio;
+                texto.style.transform = `rotate(${180 / total}deg)`;
+                setor.appendChild(texto);
                 roleta.appendChild(setor);
             });
         }
