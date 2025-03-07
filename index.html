@@ -94,12 +94,6 @@
     height: 100%;
     clip-path: polygon(50% 50%, 100% 0, 100% 100%);
     transform-origin: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: #fff;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   }
 
   .nomes, .premios {
@@ -131,6 +125,50 @@
 
   .premios button:hover {
     background-color: #cc0000;
+  }
+
+  .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    z-index: 1000;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .popup h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #007bff;
+  }
+
+  .popup p {
+    margin: 10px 0 0;
+    font-size: 18px;
+    color: #333;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
   }
 </style>
 </head>
@@ -202,7 +240,6 @@
       segmento.className = 'segmento';
       segmento.style.backgroundColor = `hsl(${index * (360 / premios.length)}, 70%, 50%)`;
       segmento.style.transform = `rotate(${index * angulo}deg)`;
-      segmento.innerHTML = `<div style="transform: rotate(${angulo / 2}deg); text-align: center; width: 100%;">${premio}</div>`;
       roleta.appendChild(segmento);
     });
   }
@@ -239,6 +276,21 @@
     atualizarListaNomes();
   }
 
+  function mostrarPopup(vencedor, premio) {
+    const popup = document.createElement('div');
+    popup.className = 'popup';
+    popup.innerHTML = `
+      <h2>🎉 Parabéns! 🎉</h2>
+      <p><strong>${vencedor}</strong> ganhou: <strong>${premio}</strong></p>
+    `;
+    document.body.appendChild(popup);
+
+    setTimeout(() => {
+      popup.style.animation = 'fadeOut 0.5s ease-in-out';
+      setTimeout(() => popup.remove(), 500);
+    }, 5000); // Fecha após 5 segundos
+  }
+
   function sortearPremio() {
     const nomeSelecionado = document.querySelector('input[name="nomeSelecionado"]:checked');
     if (nomeSelecionado && premios.length > 0) {
@@ -250,7 +302,7 @@
         const anguloFinal = giro % 360;
         const indexPremio = Math.floor((360 - anguloFinal) / (360 / premios.length));
         const premioSorteado = premios[indexPremio];
-        alert(`${nomeSelecionado.value} ganhou: ${premioSorteado}`);
+        mostrarPopup(nomeSelecionado.value, premioSorteado);
       }, 4000); // Tempo da animação
     } else {
       alert('Por favor, selecione um nome e adicione pelo menos um prêmio.');
