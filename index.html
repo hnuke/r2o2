@@ -211,6 +211,14 @@
   let premios = [];
   let nomes = [];
 
+  // Sons da roleta
+  const somRoleta = new Audio('roleta.m4a');
+  const somVitoria = new Audio('vitoria.m4a');
+
+  // Configuração inicial do som de roleta
+  somRoleta.loop = true; // A roleta vai tocar em loop até parar
+  somRoleta.volume = 0.5; // Volume inicial
+
   function adicionarPremio() {
     const premio = document.getElementById('premioInput').value.trim();
     if (premio) {
@@ -298,11 +306,28 @@
       const giro = Math.floor(Math.random() * 3600) + 1440; // Gira entre 4 e 10 voltas
       roleta.style.transform = `rotate(${giro}deg)`;
 
+      // Inicia o som da roleta
+      somRoleta.play();
+
+      // Diminuindo o volume da roleta conforme ela vai parando
+      let volumeDiminuindo = 0.5;
+      let intervalo = setInterval(() => {
+        volumeDiminuindo -= 0.05; // Diminui o volume
+        if (volumeDiminuindo <= 0) {
+          clearInterval(intervalo);
+          somRoleta.pause();
+        }
+        somRoleta.volume = volumeDiminuindo;
+      }, 200); // A cada 200ms diminui o volume
+
       setTimeout(() => {
         const anguloFinal = giro % 360;
         const indexPremio = Math.floor((360 - anguloFinal) / (360 / premios.length));
         const premioSorteado = premios[indexPremio];
         mostrarPopup(nomeSelecionado.value, premioSorteado);
+
+        // Reproduz o som de vitória
+        somVitoria.play();
       }, 4000); // Tempo da animação
     } else {
       alert('Por favor, selecione um nome e adicione pelo menos um prêmio.');
